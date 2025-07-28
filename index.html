@@ -25,34 +25,30 @@
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
       text-align: center;
       border: 2px solid #d3e5ff;
-      animation: fadeIn 1s ease-in-out;
     }
     h1 {
       margin-bottom: 10px;
       font-weight: 600;
       color: #3a86ff;
     }
-    p.instructions {
-      color: #666;
-      font-size: 16px;
-      margin-bottom: 20px;
-    }
     #quote {
-      font-size: 20px;
-      margin-bottom: 20px;
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
+      margin: 20px 0;
+      font-size: 20px;
     }
     .char {
-      padding: 2px;
-      font-size: 20px;
+      padding: 2px 4px;
       border-bottom: 1px solid #ccc;
+      white-space: pre;
     }
     .correct {
+      background-color: #d4edda;
       color: green;
     }
     .incorrect {
+      background-color: #f8d7da;
       color: red;
     }
     #results {
@@ -60,15 +56,11 @@
       font-weight: bold;
     }
     textarea {
-      width: 100%;
-      font-size: 16px;
-      margin-top: 20px;
-      padding: 10px;
-      border-radius: 8px;
-      border: 2px solid #d3e5ff;
-      font-family: 'Poppins', sans-serif;
-      resize: none;
-      outline: none;
+      position: absolute;
+      opacity: 0;
+    }
+    #timer {
+      font-weight: bold;
     }
     button {
       margin-top: 20px;
@@ -79,14 +71,6 @@
       color: white;
       border: none;
       border-radius: 8px;
-      transition: background 0.3s ease;
-    }
-    button:hover {
-      background-color: #265fdc;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
@@ -94,23 +78,16 @@
   <div class="container">
     <h1>Typing Test</h1>
     <p id="timer">Time left: 60s</p>
-    <p class="instructions">Start typing the sentence below on your keyboard:</p>
+    <p>Start typing the sentence below on your keyboard:</p>
     <div id="quote"></div>
-    <textarea id="input" placeholder="Start typing here..." rows="5"></textarea>
     <div id="results"></div>
-    <button type="button" onclick="startTest()">Restart</button>
+    <textarea id="input"></textarea>
+    <button onclick="startTest()">Restart</button>
   </div>
 
   <script>
-    // Prevent spacebar from scrolling the page
-    document.addEventListener("keydown", function (e) {
-      if (e.code === "Space" && e.target.tagName !== "TEXTAREA") {
-        e.preventDefault();
-      }
-    });
-
     const quotes = [
-      "She once refused an employee maternity leave because she thought the baby was ugly and said, "Why would she want to be at home with that thing?"",
+      "She once refused an employee maternity leave because she thought the baby was ugly and said, 'Why would she want to be at home with that thing?'",
       "You owe me 20 bucks. You know who you are.",
       "At a lesbian wedding, does the bride just throw a softball instead of a bouquet?",
       "Me fail English? That's unpossible.",
@@ -123,59 +100,88 @@
     let timerInterval;
     let timeLeft = 60;
 
-function startTest() {
-  clearInterval(timerInterval);
+    const quoteEl = document.getElementById("quote");
+    const inputEl = document.getElementById("input");
+    const resultsEl = document.getElementById("results");
+    const timerEl = document.getElementById("timer");
 
-  const randomIndex = Math.floor(Math.random() * quotes.length);
-  currentQuote = quotes[randomIndex];
-  document.getElementById("quote").innerText = currentQuote;
+    document.addEventListener("keydown", function (e) {
+      if (e.code === "Space" && e.target.tagName !== "TEXTAREA") {
+        e.preventDefault();
+      }
+    });
 
-  const input = document.getElementById("input");
-  input.value = "";
-  input.disabled = false;
-  input.focus();
+    inputEl.addEventListener("input", () => {
+      const input = inputEl.value;
+      const quoteSpans = quoteEl.querySelectorAll(".char");
+      let correct = 0;
 
-  timeLeft = 60;
-  document.getElementById("timer").innerText = `Time left: ${timeLeft}s`;
-  startTime = new Date().getTime();
+      quoteSpans.forEach((span, index) => {
+        const typedChar = input[index];
+        if (typedChar == null) {
+          span.classList.remove("correct", "incorrect");
+        } else if (typedChar === span.innerText) {
+          span.classList.add("correct");
+          span.classList.remove("incorrect");
+          correct++;
+        } else {
+          span.classList.add("incorrect");
+          span.classList.remove("correct");
+        }
+      });
 
-  timerInterval = setInterval(() => {
-    timeLeft--;
-    document.getElementById("timer").innerText = `Time left: ${timeLeft}s`;
+      if (input === currentQuote) {
+        clearInterval(timerInterval);
+        const elapsed = (new Date().getTime() - startTime) / 1000;
+        const words = currentQuote.trim().split(/\s+/).length;
+        const wpm = Math.round((words / elapsed) * 60);
+        const accuracy = Math.round((correct / currentQuote.length) * 100);
+        resultsEl.innerText = `You typed at ${wpm} WPM with ${accuracy}% accuracy!`;
+        inputEl.disabled = true;
+      }
+    });
 
-    if (timeLeft <= 0) {
+    function startTest() {
       clearInterval(timerInterval);
-      input.disabled = true;
-      document.getElementById("results").innerText = "Time's up!";
+      inputEl.value = '';
+      inputEl.disabled = false;
+      inputEl.focus();
+      resultsEl.innerText = '';
+
+      const quote = quotes[Math.floor(Math.random() * quotes.length)];
+      currentQuote = quote;
+      quoteEl.innerHTML = '';
+
+      quote.split('').forEach(char => {
+        const span = document.createElement('span');
+        span.innerText = char;
+        span.classList.add('char');
+        quoteEl.appendChild(span);
+      });
+
+      timeLeft = 60;
+      timerEl.innerText = `Time left: ${timeLeft}s`;
+      startTime = new Date().getTime();
+
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        timerEl.innerText = `Time left: ${timeLeft}s`;
+
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          inputEl.disabled = true;
+          const quoteSpans = quoteEl.querySelectorAll(".char");
+          let correct = 0;
+          quoteSpans.forEach((span, index) => {
+            if (inputEl.value[index] === span.innerText) {
+              correct++;
+            }
+          });
+          const accuracy = Math.round((correct / currentQuote.length) * 100);
+          resultsEl.innerText = `Time's up! Accuracy: ${accuracy}%`;
+        }
+      }, 1000);
     }
-  }, 1000);
-}
-
-   document.getElementById("input").addEventListener("input", function () {
-  const inputText = this.value;
-  const quoteText = currentQuote;
-
-  let correctChars = 0;
-  const totalTypedChars = inputText.length;
-
-  for (let i = 0; i < totalTypedChars; i++) {
-    if (inputText[i] === quoteText[i]) {
-      correctChars++;
-    }
-  }
-
-  const accuracy = Math.round((correctChars / totalTypedChars) * 100);
-
-  if (inputText === quoteText) {
-    const elapsed = (new Date().getTime() - startTime) / 1000;
-    const words = quoteText.trim().split(/\s+/).length;
-    const wpm = Math.round((words / elapsed) * 60);
-    
-    document.getElementById("results").innerText = `You typed at ${wpm} WPM with ${accuracy}% accuracy!`;
-    this.disabled = true;
-    clearInterval(timerInterval);
-  }
-});
 
     window.onload = startTest;
   </script>
