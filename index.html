@@ -59,6 +59,17 @@
       margin-top: 20px;
       font-weight: bold;
     }
+    textarea {
+      width: 100%;
+      font-size: 16px;
+      margin-top: 20px;
+      padding: 10px;
+      border-radius: 8px;
+      border: 2px solid #d3e5ff;
+      font-family: 'Poppins', sans-serif;
+      resize: none;
+      outline: none;
+    }
     button {
       margin-top: 20px;
       padding: 10px 20px;
@@ -85,69 +96,71 @@
     <p id="timer">Time left: 60s</p>
     <p class="instructions">Start typing the sentence below on your keyboard:</p>
     <div id="quote"></div>
+    <textarea id="input" placeholder="Start typing here..." rows="5"></textarea>
     <div id="results"></div>
     <button type="button" onclick="startTest()">Restart</button>
   </div>
-  <script>
-    const quotes = [
-  "She once refused an employee maternity leave because she thought the baby was ugly and said, 'Why would she want to be at home with that thing?'",
-  "You owe me 20 bucks. You know who you are.",
-  "At a lesbian wedding, does the bride just throw a softball instead of a bouquet?",
-  "Me fail English? That's unpossible.",
-  "This anonymous clan of slack-jawed troglodytes has cost me the election. And yet, if I were to have them killed, I would be the one to go to jail. That's democracy for you.",
-  "Have you ever tried turning off the computer and electrical devices, sitting down with your loving wife and children, and hitting them?"
-];
 
-    let currentQuote = "";
-    let userInput = "";
-    let startTime = null;
+  <script>
+    // Prevent spacebar from scrolling the page
+    document.addEventListener("keydown", function (e) {
+      if (e.code === "Space" && e.target.tagName !== "TEXTAREA") {
+        e.preventDefault();
+      }
+    });
+
+    const quotes = [
+      "She once refused an employee maternity leave because she thought the baby was ugly and said, 'Why would she want to be at home with that thing?'",
+      "You owe me 20 bucks. You know who you are.",
+      "At a lesbian wedding, does the bride just throw a softball instead of a bouquet?",
+      "Me fail English? That's unpossible.",
+      "This anonymous clan of slack-jawed troglodytes has cost me the election. And yet, if I were to have them killed, I would be the one to go to jail. That's democracy for you.",
+      "Have you ever tried turning off the computer and electrical devices, sitting down with your loving wife and children, and hitting them?"
+    ];
+
+    let currentQuote = '';
+    let startTime;
+    let timerInterval;
+    let timeLeft = 60;
 
     function startTest() {
-      const quoteEl = document.getElementById("quote");
-      const resultsEl = document.getElementById("results");
+      clearInterval(timerInterval);
       const randomIndex = Math.floor(Math.random() * quotes.length);
       currentQuote = quotes[randomIndex];
-      userInput = "";
-      startTime = null;
-      resultsEl.innerText = "";
+      document.getElementById("quote").innerText = currentQuote;
 
-      quoteEl.innerHTML = "";
-      for (let char of currentQuote) {
-        const span = document.createElement("span");
-        span.innerText = char;
-        span.classList.add("char");
-        quoteEl.appendChild(span);
-      }
+      const input = document.getElementById("input");
+      input.value = '';
+      input.disabled = false;
+      input.focus();
+
+      timeLeft = 60;
+      document.getElementById("timer").innerText = `Time left: ${timeLeft}s`;
+      document.getElementById("results").innerText = '';
+
+      startTime = new Date().getTime();
+
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        document.getElementById("timer").innerText = `Time left: ${timeLeft}s`;
+
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          input.disabled = true;
+          document.getElementById("results").innerText = "Time's up!";
+        }
+      }, 1000);
     }
 
-    document.addEventListener("keydown", function (e) {
-      e.preventDefault();  // This prevents the page from refreshing on space or other key combos
-
-      const quoteEl = document.getElementById("quote");
-      const spans = quoteEl.querySelectorAll("span");
-
-      if (!startTime) startTime = new Date().getTime();
-
-      if (e.key === "Backspace") {
-        userInput = userInput.slice(0, -1);
-      } else if (e.key.length === 1) {
-        userInput += e.key;
-      }
-
-      for (let i = 0; i < spans.length; i++) {
-        spans[i].classList.remove("correct", "incorrect");
-        if (i < userInput.length) {
-          spans[i].classList.add(
-            userInput[i] === currentQuote[i] ? "correct" : "incorrect"
-          );
-        }
-      }
-
-      if (userInput === currentQuote) {
+    document.getElementById("input").addEventListener("input", function () {
+      const inputText = this.value;
+      if (inputText === currentQuote) {
         const elapsed = (new Date().getTime() - startTime) / 1000;
         const words = currentQuote.trim().split(/\s+/).length;
         const wpm = Math.round((words / elapsed) * 60);
         document.getElementById("results").innerText = `You typed at ${wpm} WPM!`;
+        this.disabled = true;
+        clearInterval(timerInterval);
       }
     });
 
