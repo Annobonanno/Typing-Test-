@@ -6,39 +6,60 @@
   <title>Typing Test</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
-   body {
-  background: linear-gradient(to right, #f9f9f9, #d3e5ff);
-}
-.container {
-  background: #ffffff;
-  border: 2px solid #d3e5ff;
-  padding: 40px;
-}
-button {
-  background-color: #3a86ff;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  transition: background 0.3s ease;
-  padding: 10px 20px;
-  font-size: 16px;
-  cursor: pointer;
-}
-button:hover {
-  background-color: #265fdc;
-}
-textarea {
-  border: 1px solid #ccc;
-  border-radius: 8px;
-}
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(to right, #f9f9f9, #d3e5ff);
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .container {
+      background: #ffffff;
+      border: 2px solid #d3e5ff;
+      padding: 40px;
+      border-radius: 10px;
+      max-width: 600px;
+      width: 100%;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+    h1 {
+      margin-bottom: 20px;
+    }
+    #quote {
+      font-size: 18px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+    textarea {
+      width: 100%;
+      height: 100px;
+      font-size: 16px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-sizing: border-box;
+    }
     #results {
       font-weight: bold;
       margin-bottom: 20px;
     }
     button {
+      background-color: #3a86ff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      transition: background 0.3s ease;
       padding: 10px 20px;
       font-size: 16px;
       cursor: pointer;
+    }
+    button:hover {
+      background-color: #265fdc;
     }
   </style>
 </head>
@@ -51,44 +72,44 @@ textarea {
     <button onclick="startTest()">Restart</button>
   </div>
 <script>
-const quotes = [ 
-  "She once refused an employee maternity leave because she thought the baby was ugly and said, 'Why would she want to be at home with that thing?'",
-  "You owe me 20 bucks. You know who you are.",
-  "At a lesbian wedding does the bride just throw a softball instead of a bouquet?",
-  "Me Fail English? That's Unpossible.",
-  "This Anonymous Clan Of Slack-Jawed Troglodytes Has Cost Me The Election. And Yet, If I Were To Have Them Killed, I Would Be The One To Go To Jail. That's Democracy For You.",
-  "Have you ever tried turning off the computer and electrical devices, sitting down with your loving wife and children and hitting them?"
-];
+  const quotes = [ 
+    "She once refused an employee maternity leave because she thought the baby was ugly and said, 'Why would she want to be at home with that thing?'",
+    "You owe me 20 bucks. You know who you are.",
+    "At a lesbian wedding does the bride just throw a softball instead of a bouquet?",
+    "Me Fail English? That's Unpossible.",
+    "This Anonymous Clan Of Slack-Jawed Troglodytes Has Cost Me The Election. And Yet, If I Were To Have Them Killed, I Would Be The One To Go To Jail. That's Democracy For You.",
+    "Have you ever tried turning off the computer and electrical devices, sitting down with your loving wife and children and hitting them?"
+  ];
 
-let currentQuote = "";  // Must be global
-let startTime = 0;
+  let currentQuote = "";
+  let startTime = 0;
 
-function startTest() {
-  const randomIndex = Math.floor(Math.random() * quotes.length);
-  currentQuote = quotes[randomIndex];
-  document.getElementById("quote").innerText = currentQuote;
+  function startTest() {
+    const randomIndex = Math.floor(Math.random() * quotes.length);
+    currentQuote = quotes[randomIndex];
+    document.getElementById("quote").innerText = currentQuote;
 
-  const input = document.getElementById("input");
-  input.value = "";
-  input.disabled = false;
-  input.focus();
-  document.getElementById("results").innerText = "";
-  startTime = new Date().getTime();
-}
-
-document.getElementById("input").addEventListener("input", function () {
-  const inputText = this.value;
-
-  if (inputText === currentQuote) {
-    const elapsed = (new Date().getTime() - startTime) / 1000;
-    const words = currentQuote.trim().split(/\s+/).length;
-    const wpm = Math.round((words / elapsed) * 60);
-    document.getElementById("results").innerText = `You typed at ${wpm} WPM!`;
-    this.disabled = true;
+    const input = document.getElementById("input");
+    input.value = "";
+    input.disabled = false;
+    input.focus();
+    document.getElementById("results").innerText = "";
+    startTime = new Date().getTime();
   }
-});
 
-window.onload = startTest;
+  document.getElementById("input").addEventListener("input", function () {
+    const inputText = this.value;
+
+    if (inputText === currentQuote) {
+      const elapsed = (new Date().getTime() - startTime) / 1000;
+      const words = currentQuote.trim().split(/\\s+/).length;
+      const wpm = Math.round((words / elapsed) * 60);
+      document.getElementById("results").innerText = `You typed at ${wpm} WPM!`;
+      this.disabled = true;
+    }
+  });
+
+  window.onload = startTest;
 </script>
 </body>
 </html>
