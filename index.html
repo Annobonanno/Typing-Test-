@@ -69,7 +69,10 @@
     let startTime;
 
     function startTest() {
-      document.getElementById("quote").innerText = quote;
+      const randomIndex = Math.floor(Math.random() * quotes.length);
+const currentQuote = quotes[randomIndex];
+document.getElementById("quote").innerText = currentQuote;
+
       const input = document.getElementById("input");
       input.value = "";
       input.disabled = false;
@@ -80,13 +83,14 @@
 
     document.getElementById("input").addEventListener("input", function () {
       const inputText = this.value;
-      if (inputText === quote) {
-        const elapsed = (new Date().getTime() - startTime) / 1000;
-        const words = quote.split(" ").length;
-        const wpm = Math.round((words / elapsed) * 60);
-        document.getElementById("results").innerText = `You typed at ${wpm} WPM!`;
-        this.disabled = true;
-      }
+if (inputText === currentQuote) {
+  const elapsed = (new Date().getTime() - startTime) / 1000;
+  const words = currentQuote.split(" ").length;
+  const wpm = Math.round((words / elapsed) * 60);
+  document.getElementById("results").innerText = `You typed at ${wpm} WPM!`;
+  this.disabled = true;
+}
+
     });
 
     window.onload = startTest;
