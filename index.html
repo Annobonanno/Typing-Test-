@@ -151,17 +151,31 @@ function startTest() {
   }, 1000);
 }
 
-    document.getElementById("input").addEventListener("input", function () {
-      const inputText = this.value;
-      if (inputText === currentQuote) {
-        const elapsed = (new Date().getTime() - startTime) / 1000;
-        const words = currentQuote.trim().split(/\s+/).length;
-        const wpm = Math.round((words / elapsed) * 60);
-        document.getElementById("results").innerText = `You typed at ${wpm} WPM!`;
-        this.disabled = true;
-        clearInterval(timerInterval);
-      }
-    });
+   document.getElementById("input").addEventListener("input", function () {
+  const inputText = this.value;
+  const quoteText = currentQuote;
+
+  let correctChars = 0;
+  const totalTypedChars = inputText.length;
+
+  for (let i = 0; i < totalTypedChars; i++) {
+    if (inputText[i] === quoteText[i]) {
+      correctChars++;
+    }
+  }
+
+  const accuracy = Math.round((correctChars / totalTypedChars) * 100);
+
+  if (inputText === quoteText) {
+    const elapsed = (new Date().getTime() - startTime) / 1000;
+    const words = quoteText.trim().split(/\s+/).length;
+    const wpm = Math.round((words / elapsed) * 60);
+    
+    document.getElementById("results").innerText = `You typed at ${wpm} WPM with ${accuracy}% accuracy!`;
+    this.disabled = true;
+    clearInterval(timerInterval);
+  }
+});
 
     window.onload = startTest;
   </script>
