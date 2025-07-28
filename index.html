@@ -110,7 +110,7 @@
     });
 
     const quotes = [
-      "She once refused an employee maternity leave because she thought the baby was ugly and said, 'Why would she want to be at home with that thing?'",
+      "She once refused an employee maternity leave because she thought the baby was ugly and said, "Why would she want to be at home with that thing?"",
       "You owe me 20 bucks. You know who you are.",
       "At a lesbian wedding, does the bride just throw a softball instead of a bouquet?",
       "Me fail English? That's unpossible.",
@@ -123,34 +123,33 @@
     let timerInterval;
     let timeLeft = 60;
 
-    function startTest() {
+function startTest() {
+  clearInterval(timerInterval);
+
+  const randomIndex = Math.floor(Math.random() * quotes.length);
+  currentQuote = quotes[randomIndex];
+  document.getElementById("quote").innerText = currentQuote;
+
+  const input = document.getElementById("input");
+  input.value = "";
+  input.disabled = false;
+  input.focus();
+
+  timeLeft = 60;
+  document.getElementById("timer").innerText = `Time left: ${timeLeft}s`;
+  startTime = new Date().getTime();
+
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    document.getElementById("timer").innerText = `Time left: ${timeLeft}s`;
+
+    if (timeLeft <= 0) {
       clearInterval(timerInterval);
-      const randomIndex = Math.floor(Math.random() * quotes.length);
-      currentQuote = quotes[randomIndex];
-      document.getElementById("quote").innerText = currentQuote;
-
-      const input = document.getElementById("input");
-      input.value = '';
-      input.disabled = false;
-      input.focus();
-
-      timeLeft = 60;
-      document.getElementById("timer").innerText = `Time left: ${timeLeft}s`;
-      document.getElementById("results").innerText = '';
-
-      startTime = new Date().getTime();
-
-      timerInterval = setInterval(() => {
-        timeLeft--;
-        document.getElementById("timer").innerText = `Time left: ${timeLeft}s`;
-
-        if (timeLeft <= 0) {
-          clearInterval(timerInterval);
-          input.disabled = true;
-          document.getElementById("results").innerText = "Time's up!";
-        }
-      }, 1000);
+      input.disabled = true;
+      document.getElementById("results").innerText = "Time's up!";
     }
+  }, 1000);
+}
 
     document.getElementById("input").addEventListener("input", function () {
       const inputText = this.value;
