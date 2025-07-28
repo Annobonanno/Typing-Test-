@@ -28,9 +28,14 @@
       animation: fadeIn 1s ease-in-out;
     }
     h1 {
-      margin-bottom: 20px;
+      margin-bottom: 10px;
       font-weight: 600;
       color: #3a86ff;
+    }
+    p.instructions {
+      color: #666;
+      font-size: 16px;
+      margin-bottom: 20px;
     }
     #quote {
       font-size: 20px;
@@ -77,9 +82,9 @@
 <body>
   <div class="container">
     <h1>Typing Test</h1>
-<p style="color: #666;">Start typing the sentence below on your keyboard:</p>
-<div id="quote"></div>
-<div id="results"></div>
+    <p class="instructions">Start typing the sentence below on your keyboard:</p>
+    <div id="quote"></div>
+    <div id="results"></div>
     <button onclick="startTest()">Restart</button>
   </div>
   <script>
@@ -114,8 +119,11 @@
     }
 
     document.addEventListener("keydown", function (e) {
+      e.preventDefault();  // This prevents the page from refreshing on space or other key combos
+
       const quoteEl = document.getElementById("quote");
       const spans = quoteEl.querySelectorAll("span");
+
       if (!startTime) startTime = new Date().getTime();
 
       if (e.key === "Backspace") {
