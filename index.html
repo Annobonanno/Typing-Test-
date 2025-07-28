@@ -120,7 +120,7 @@
         const typedChar = input[index];
         if (typedChar == null) {
           span.classList.remove("correct", "incorrect");
-        } else if (typedChar === span.innerText) {
+        } else if (typedChar === span.textContent){
           span.classList.add("correct");
           span.classList.remove("incorrect");
           correct++;
