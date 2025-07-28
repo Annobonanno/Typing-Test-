@@ -91,15 +91,15 @@
     ];
 
     let currentQuote = "";
-    let currentIndex = 0;
-    let startTime = 0;
+    let userInput = "";
+    let startTime = null;
 
     function startTest() {
       const quoteEl = document.getElementById("quote");
       const resultsEl = document.getElementById("results");
       const randomIndex = Math.floor(Math.random() * quotes.length);
       currentQuote = quotes[randomIndex];
-      currentIndex = 0;
+      userInput = "";
       startTime = null;
       resultsEl.innerText = "";
 
@@ -114,29 +114,29 @@
 
     document.addEventListener("keydown", function (e) {
       const quoteEl = document.getElementById("quote");
-      const resultsEl = document.getElementById("results");
       const spans = quoteEl.querySelectorAll("span");
-
       if (!startTime) startTime = new Date().getTime();
 
-      if (currentIndex >= currentQuote.length) return;
-
-      const expectedChar = currentQuote[currentIndex];
-      const typedChar = e.key;
-
-      if (typedChar === expectedChar) {
-        spans[currentIndex].classList.add("correct");
-      } else {
-        spans[currentIndex].classList.add("incorrect");
+      if (e.key === "Backspace") {
+        userInput = userInput.slice(0, -1);
+      } else if (e.key.length === 1) {
+        userInput += e.key;
       }
 
-      currentIndex++;
+      for (let i = 0; i < spans.length; i++) {
+        spans[i].classList.remove("correct", "incorrect");
+        if (i < userInput.length) {
+          spans[i].classList.add(
+            userInput[i] === currentQuote[i] ? "correct" : "incorrect"
+          );
+        }
+      }
 
-      if (currentIndex === currentQuote.length) {
+      if (userInput === currentQuote) {
         const elapsed = (new Date().getTime() - startTime) / 1000;
         const words = currentQuote.trim().split(/\s+/).length;
         const wpm = Math.round((words / elapsed) * 60);
-        resultsEl.innerText = `You typed at ${wpm} WPM!`;
+        document.getElementById("results").innerText = `You typed at ${wpm} WPM!`;
       }
     });
 
