@@ -17,99 +17,130 @@
       height: 100vh;
     }
     .container {
-      background: #ffffff;
-      border: 2px solid #d3e5ff;
+      background: white;
       padding: 40px;
       border-radius: 10px;
-      max-width: 600px;
+      max-width: 700px;
       width: 100%;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
       text-align: center;
+      border: 2px solid #d3e5ff;
+      animation: fadeIn 1s ease-in-out;
     }
     h1 {
       margin-bottom: 20px;
+      font-weight: 600;
+      color: #3a86ff;
     }
     #quote {
-      font-size: 18px;
+      font-size: 20px;
       margin-bottom: 20px;
-      color: #333;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
     }
-    textarea {
-      width: 100%;
-      height: 100px;
-      font-size: 16px;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      margin-bottom: 20px;
-      box-sizing: border-box;
+    .char {
+      padding: 2px;
+      font-size: 20px;
+      border-bottom: 1px solid #ccc;
+    }
+    .correct {
+      color: green;
+    }
+    .incorrect {
+      color: red;
     }
     #results {
+      margin-top: 20px;
       font-weight: bold;
-      margin-bottom: 20px;
     }
     button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
       background-color: #3a86ff;
       color: white;
       border: none;
       border-radius: 8px;
       transition: background 0.3s ease;
-      padding: 10px 20px;
-      font-size: 16px;
-      cursor: pointer;
     }
     button:hover {
       background-color: #265fdc;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>Typing Test</h1>
-    <p id="quote">Loading quote...</p>
-    <textarea id="input" placeholder="Start typing here..."></textarea>
+    <div id="quote"></div>
     <div id="results"></div>
     <button onclick="startTest()">Restart</button>
   </div>
-<script>
-  const quotes = [ 
-    "She once refused an employee maternity leave because she thought the baby was ugly and said, 'Why would she want to be at home with that thing?'",
-    "You owe me 20 bucks. You know who you are.",
-    "At a lesbian wedding does the bride just throw a softball instead of a bouquet?",
-    "Me Fail English? That's Unpossible.",
-    "This Anonymous Clan Of Slack-Jawed Troglodytes Has Cost Me The Election. And Yet, If I Were To Have Them Killed, I Would Be The One To Go To Jail. That's Democracy For You.",
-    "Have you ever tried turning off the computer and electrical devices, sitting down with your loving wife and children and hitting them?"
-  ];
+  <script>
+    const quotes = [
+      "Typing tests are a fun way to improve your speed.",
+      "Every journey begins with a single keystroke.",
+      "Coding is like typing but with more crying.",
+      "Stay calm and keep typing.",
+      "You are doing amazing, keep going!"
+    ];
 
-  let currentQuote = "";
-  let startTime = 0;
+    let currentQuote = "";
+    let currentIndex = 0;
+    let startTime = 0;
 
-  function startTest() {
-    const randomIndex = Math.floor(Math.random() * quotes.length);
-    currentQuote = quotes[randomIndex];
-    document.getElementById("quote").innerText = currentQuote;
+    function startTest() {
+      const quoteEl = document.getElementById("quote");
+      const resultsEl = document.getElementById("results");
+      const randomIndex = Math.floor(Math.random() * quotes.length);
+      currentQuote = quotes[randomIndex];
+      currentIndex = 0;
+      startTime = null;
+      resultsEl.innerText = "";
 
-    const input = document.getElementById("input");
-    input.value = "";
-    input.disabled = false;
-    input.focus();
-    document.getElementById("results").innerText = "";
-    startTime = new Date().getTime();
-  }
-
-  document.getElementById("input").addEventListener("input", function () {
-    const inputText = this.value;
-
-    if (inputText === currentQuote) {
-      const elapsed = (new Date().getTime() - startTime) / 1000;
-      const words = currentQuote.trim().split(/\\s+/).length;
-      const wpm = Math.round((words / elapsed) * 60);
-      document.getElementById("results").innerText = `You typed at ${wpm} WPM!`;
-      this.disabled = true;
+      quoteEl.innerHTML = "";
+      for (let char of currentQuote) {
+        const span = document.createElement("span");
+        span.innerText = char;
+        span.classList.add("char");
+        quoteEl.appendChild(span);
+      }
     }
-  });
 
-  window.onload = startTest;
-</script>
+    document.addEventListener("keydown", function (e) {
+      const quoteEl = document.getElementById("quote");
+      const resultsEl = document.getElementById("results");
+      const spans = quoteEl.querySelectorAll("span");
+
+      if (!startTime) startTime = new Date().getTime();
+
+      if (currentIndex >= currentQuote.length) return;
+
+      const expectedChar = currentQuote[currentIndex];
+      const typedChar = e.key;
+
+      if (typedChar === expectedChar) {
+        spans[currentIndex].classList.add("correct");
+      } else {
+        spans[currentIndex].classList.add("incorrect");
+      }
+
+      currentIndex++;
+
+      if (currentIndex === currentQuote.length) {
+        const elapsed = (new Date().getTime() - startTime) / 1000;
+        const words = currentQuote.trim().split(/\s+/).length;
+        const wpm = Math.round((words / elapsed) * 60);
+        resultsEl.innerText = `You typed at ${wpm} WPM!`;
+      }
+    });
+
+    window.onload = startTest;
+  </script>
 </body>
 </html>
