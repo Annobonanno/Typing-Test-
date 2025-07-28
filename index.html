@@ -115,22 +115,25 @@
       const input = inputEl.value;
       const quoteSpans = quoteEl.querySelectorAll(".char");
       let correct = 0;
+      let completed = true;
 
       quoteSpans.forEach((span, index) => {
         const typedChar = input[index];
         if (typedChar == null) {
           span.classList.remove("correct", "incorrect");
-        } else if (typedChar === span.textContent){
+          completed = false;
+        } else if (typedChar === span.innerText) {
           span.classList.add("correct");
           span.classList.remove("incorrect");
           correct++;
         } else {
           span.classList.add("incorrect");
           span.classList.remove("correct");
+          completed = false;
         }
       });
 
-      if (input === currentQuote) {
+      if (input.length === currentQuote.length) {
         clearInterval(timerInterval);
         const elapsed = (new Date().getTime() - startTime) / 1000;
         const words = currentQuote.trim().split(/\s+/).length;
